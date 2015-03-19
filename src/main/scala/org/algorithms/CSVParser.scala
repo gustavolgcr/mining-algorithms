@@ -9,6 +9,9 @@ object CSVParser {
     var tempList = src.getLines().drop(1).map(_.split(";")).toList
     src.close()
 
+    println(tempList(0).head.toDouble)
+
+
     return tempList
   }
 }
