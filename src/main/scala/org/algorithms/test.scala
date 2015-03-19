@@ -7,9 +7,13 @@ object test {
   def main(args: Array[String]) {
     var wines = CSVParser.readFile("datasets/winequality-red.csv")
 
-    var it = 0
-    for(wine <- wines) {
-      println(wine(0))
+    var normalizedWines = Normalization.featureScaling(wines, 0, 100)
+
+    for(tuple <- normalizedWines) {
+      for(value <- tuple) {
+        printf("%.2f\t", value)
+      }
+      println("")
     }
   }
 }
