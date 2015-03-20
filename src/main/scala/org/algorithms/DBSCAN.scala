@@ -11,6 +11,22 @@ object DBSCAN {
     val Visited, Unvisited, Noise = Value
   }
 
+  def euclideanDistance(pointA: Array[Float], pointB: Array[Float]) : Float = {
+    var distance : Float = 0
+
+    if (pointA.length == pointB.length) {
+      for (i <- 0 until pointA.length) {
+        distance += scala.math.pow(pointA(i) - pointB(i), 2)
+      }
+
+      distance = scala.math.sqrt(distance).toFloat
+
+      return distance
+    }
+
+    return -1
+  }
+
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):
                     ListBuffer[ArrayBuffer[Int]] = {
     var clusters = new ListBuffer[ArrayBuffer[Int]]()
@@ -30,7 +46,7 @@ object DBSCAN {
         }
       }
     }
-    
+
     return clusters
   }
 
@@ -39,8 +55,16 @@ object DBSCAN {
 
   }
 
-  def regionQuery(point: Array[Float], eps: Float): List[Array[Float]] = {
+  def regionQuery(dataset: List[Array[Float]], point: Array[Float], eps: Float): List[Array[Float]] = {
+    var region = ListBuffer[Array[Float]]()
+    region += point
 
-    return null
+    for(tuple <- dataset) {
+      if(euclideanDistance(point, tuple) <= eps) {
+        region += tuple
+      }
+    }
+
+    return region.toList
   }
 }
