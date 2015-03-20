@@ -9,17 +9,11 @@ object test {
 
     var normalizedWines = Normalization.featureScaling(wines, 0, 100)
 
+    var kmeans = new KMeans(normalizedWines, 8, .5f)
 
-    for(tuple <- normalizedWines) {
-      for(value <- tuple) {
-        printf("%.2f\t", value)
-      }
-      println("")
-    }
+    var answer : Array[Cluster] = kmeans.execute
 
-    var resposta = new KMeans(normalizedWines, 2, 3)
-
-    resposta.execute
+    println(answer)
 
   }
 }
