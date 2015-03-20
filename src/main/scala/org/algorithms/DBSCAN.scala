@@ -6,6 +6,9 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
  * Created by rui on 3/19/15.
  */
 object DBSCAN {
+  var pointState:Array[PointState.PointState] = null;
+  var clusters: ListBuffer[ArrayBuffer[Int]] = null;
+
   object PointState extends Enumeration {
     type PointState = Value
     val Visited, Unvisited, Noise = Value
@@ -28,15 +31,15 @@ object DBSCAN {
 
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):
     ListBuffer[ArrayBuffer[Int]] = {
-    var clusters = new ListBuffer[ArrayBuffer[Int]]()
-    var pointState = Array.fill(dataset.length)(PointState.Unvisited)
+    clusters = new ListBuffer[ArrayBuffer[Int]]()
+    pointState = Array.fill(dataset.length)(PointState.Unvisited)
 
     for(it <- 0 until dataset.length) {
       var pointIndex = it
       if(pointState(it) == PointState.Unvisited) {
         pointState(it) = PointState.Visited
         var neighborPts = regionQuery(dataset, pointIndex, eps)
-        if(neighborPts.length < minPts) {
+        if(neighborPts.size < minPts) {
           pointState(it) = PointState.Noise
         } else {
           var cluster = new ArrayBuffer[Int]()
@@ -49,13 +52,30 @@ object DBSCAN {
     return clusters
   }
 
-  def expandCluster(dataset: List[Array[Float]], pointIndex: Int, neighbotPts:
-    List[Int], cluster: ArrayBuffer[Int], eps: Float, minPts: Int) = {
+  def expandCluster(dataset: List[Array[Float]], pointIndex: Int, neighborPts:
+    Set[Int], cluster: ArrayBuffer[Int], eps: Float, minPts: Int) = {
+    var neighborPtsCpy = neighborPts.toSet
+    cluster += pointIndex
 
+    for(pointIndexInNeighborPts <- neighborPtsCpy) {
+      if(pointState(pointIndexInNeighborPts) == PointState.Unvisited) {
+        pointState(pointIndexInNeighborPts) = PointState.Visited
+        var neighborPts_ = regionQuery(dataset, pointIndexInNeighborPts, eps)
+        if(neighborPts_.size >= minPts) {
+          neighborPtsCpy = neighborPtsCpy.union(neighborPts_)
+        }
+
+        for(clusterInClusters <- clusters) {
+          if(clusterInClusters.contains(pointIndexInNeighborPts)) {
+            cluster += pointIndexInNeighborPts
+          }
+        }
+      }
+    }
   }
 
   def regionQuery(dataset: List[Array[Float]], pointIndex: Int, eps: Float):
-    List[Int] = {
+    Set[Int] = {
     var region = ListBuffer[Int]()
     region += pointIndex
 
@@ -65,6 +85,6 @@ object DBSCAN {
       }
     }
 
-    return region.toList
+    return region.toSet
   }
 }
