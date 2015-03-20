@@ -20,7 +20,6 @@ object DBSCAN {
       }
 
       distance = scala.math.sqrt(distance).toFloat
-
       return distance
     }
 
@@ -28,21 +27,21 @@ object DBSCAN {
   }
 
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):
-                    ListBuffer[ArrayBuffer[Int]] = {
+    ListBuffer[ArrayBuffer[Int]] = {
     var clusters = new ListBuffer[ArrayBuffer[Int]]()
     var pointState = Array.fill(dataset.length)(PointState.Unvisited)
 
     for(it <- 0 until dataset.length) {
-      var point = dataset(it)
+      var pointIndex = it
       if(pointState(it) == PointState.Unvisited) {
         pointState(it) = PointState.Visited
-        var neighborPts = regionQuery(dataset, point, eps)
+        var neighborPts = regionQuery(dataset, pointIndex, eps)
         if(neighborPts.length < minPts) {
           pointState(it) = PointState.Noise
         } else {
           var cluster = new ArrayBuffer[Int]()
           clusters += cluster
-          expandCluster(point, neighborPts, cluster, eps, minPts)
+          expandCluster(dataset, pointIndex, neighborPts, cluster, eps, minPts)
         }
       }
     }
@@ -50,18 +49,19 @@ object DBSCAN {
     return clusters
   }
 
-  def expandCluster(point: Array[Float], neighbotPts: List[Array[Float]],
-                    cluster: ArrayBuffer[Int], eps: Float, minPts: Int) = {
+  def expandCluster(dataset: List[Array[Float]], pointIndex: Int, neighbotPts:
+    List[Int], cluster: ArrayBuffer[Int], eps: Float, minPts: Int) = {
 
   }
 
-  def regionQuery(dataset: List[Array[Float]], point: Array[Float], eps: Float): List[Array[Float]] = {
-    var region = ListBuffer[Array[Float]]()
-    region += point
+  def regionQuery(dataset: List[Array[Float]], pointIndex: Int, eps: Float):
+    List[Int] = {
+    var region = ListBuffer[Int]()
+    region += pointIndex
 
-    for(tuple <- dataset) {
-      if(euclideanDistance(point, tuple) <= eps) {
-        region += tuple
+    for(it <- 0 until dataset.length) {
+      if(euclideanDistance(dataset(pointIndex), dataset(it)) <= eps) {
+        region += it
       }
     }
 
