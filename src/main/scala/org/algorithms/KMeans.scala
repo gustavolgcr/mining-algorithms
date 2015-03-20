@@ -7,7 +7,7 @@ import scala.util.Random
  */
 class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
 
-  def execute: Boolean = {
+  def execute: Array[Cluster] = {
 
     /* Select k objects for initial centroids */
     var initial : Array[Point] = new Array[Point](k)
@@ -15,7 +15,7 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
     for(i <- 0 until k) {
       initial(i) = new Point(data(Random.nextInt(data.size)))
       clusters(i) = new Cluster(List(initial(i)))
-      clusters(i).calcCentroid()
+      clusters(i).updateCentroid()
     }
 
     var biggest_shift : Float = -1
@@ -24,16 +24,20 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
 
       var lists: Array[List[Point]] = new Array[List[Point]](k)
 
+      for (i <- 0 until k) {
+        lists(i) = List[Point](null)
+      }
+
       for (d <- data) {
         var p = new Point(d)
         var smallest_distance = p.distanceBetween(clusters(0).centroid)
         var index = 0
 
         for (i <- 0 until k) {
-          var distance = p.distanceBetween(clusters(i + 1).centroid)
+          var distance = p.distanceBetween(clusters(i).centroid)
           if (distance < smallest_distance) {
             smallest_distance = distance
-            index = i + 1
+            index = i
           }
         }
 
@@ -49,7 +53,7 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
 
     }
 
-    return false
+    return clusters
   }
 }
 
@@ -81,7 +85,7 @@ class Point(_attributes: Array[Float]) {
 
 class Cluster(_points: List[Point]) {
   var points : List[Point] = _points
-  var centroid : Point = new Point(Array(0))
+  var centroid : Point = null
 
   def update(_points: List[Point]): Float = {
     var old_centroid : Point  = this.centroid
@@ -94,13 +98,19 @@ class Cluster(_points: List[Point]) {
   * Calculate the centroid of cluster
   */
   def calcCentroid() : Point = {
-    var centroid : Array[Float] = new Array[Float](this.points.length)
+    var centroid : Array[Float] = new Array[Float](this.points.head.attributes.length)
     for (p <- this.points) {
-      for (i <- 0 until p.attributes.length) {
-        centroid(i) += p.attributes(i)/this.points.length
+      if (p != null) {
+        for (i <- 0 until p.attributes.length) {
+          centroid(i) += p.attributes(i) / this.points.length
+        }
       }
     }
     return new Point(centroid)
+  }
+
+  def updateCentroid() {
+    this.centroid = this.calcCentroid();
   }
 
 }
