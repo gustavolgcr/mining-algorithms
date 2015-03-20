@@ -16,7 +16,7 @@ object DBSCAN {
 
     if (pointA.length == pointB.length) {
       for (i <- 0 until pointA.length) {
-        distance += scala.math.pow(pointA(i) - pointB(i), 2)
+        distance += scala.math.pow(pointA(i) - pointB(i), 2).toFloat
       }
 
       distance = scala.math.sqrt(distance).toFloat
@@ -36,7 +36,7 @@ object DBSCAN {
       var point = dataset(it)
       if(pointState(it) == PointState.Unvisited) {
         pointState(it) = PointState.Visited
-        var neighborPts = regionQuery(point, eps)
+        var neighborPts = regionQuery(dataset, point, eps)
         if(neighborPts.length < minPts) {
           pointState(it) = PointState.Noise
         } else {
