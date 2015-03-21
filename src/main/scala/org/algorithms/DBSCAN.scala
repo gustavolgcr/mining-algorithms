@@ -42,9 +42,7 @@ object DBSCAN {
         if(neighborPts.size < minPts) {
           pointState(it) = PointState.Noise
         } else {
-          var cluster = new ArrayBuffer[Int]()
-          clusters += cluster
-          expandCluster(dataset, pointIndex, neighborPts, cluster, eps, minPts)
+          expandCluster(dataset, pointIndex, neighborPts, eps, minPts)
         }
       }
     }
@@ -53,9 +51,12 @@ object DBSCAN {
   }
 
   def expandCluster(dataset: List[Array[Float]], pointIndex: Int, neighborPts:
-    Set[Int], cluster: ArrayBuffer[Int], eps: Float, minPts: Int) = {
+    Set[Int], eps: Float, minPts: Int) = {
     var neighborPtsCpy = neighborPts.toSet
+    var cluster = new ArrayBuffer[Int]()
+
     cluster += pointIndex
+    clusters += cluster
 
     for(pointIndexInNeighborPts <- neighborPtsCpy) {
       if(pointState(pointIndexInNeighborPts) == PointState.Unvisited) {
@@ -64,11 +65,11 @@ object DBSCAN {
         if(neighborPts_.size >= minPts) {
           neighborPtsCpy = neighborPtsCpy.union(neighborPts_)
         }
+      }
 
-        for(clusterInClusters <- clusters) {
-          if(clusterInClusters.contains(pointIndexInNeighborPts)) {
-            cluster += pointIndexInNeighborPts
-          }
+      for(clusterInClusters <- clusters) {
+        if(!clusterInClusters.contains(pointIndexInNeighborPts)) {
+          cluster += pointIndexInNeighborPts
         }
       }
     }
