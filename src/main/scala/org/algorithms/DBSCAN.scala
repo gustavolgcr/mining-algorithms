@@ -74,6 +74,7 @@ object DBSCAN {
 
       if(!pointInACluster(neighborPtsCpy(i))) {
         cluster += neighborPtsCpy(i)
+        pointInACluster(neighborPtsCpy(i)) = true
       }
 
       i = i + 1
