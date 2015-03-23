@@ -1,19 +1,23 @@
 package main.scala.org.algorithms
 
+import scala.collection.mutable.HashMap
 import scala.util.Random
 
 /**
  * Created by Iago on 19/03/2015.
  */
-class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
+object KMeans {
 
-  def execute: Array[Cluster] = {
+  def apply(data: List[Array[Float]], k : Int, cutoff : Float): HashMap[Int, Int] = {
 
     /* Select k objects for initial centroids */
     val initial : Array[Point] = new Array[Point](k)
     val clusters :  Array[Cluster] = new Array[Cluster](k)
+    var lines : HashMap[Int, Int] = new HashMap[Int, Int]()
+
     for(i <- 0 until k) {
-      initial(i) = new Point(data(Random.nextInt(data.size)))
+      val random_index : Int = Random.nextInt(data.size)
+      initial(i) = new Point(data(random_index))
       clusters(i) = new Cluster(List(initial(i)))
       clusters(i).updateCentroid()
     }
@@ -29,8 +33,10 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
         lists(i) = List[Point](null)
       }
 
+      var idx : Int = 0
       for (d <- data) {
         var p = new Point(d)
+
         var smallest_distance = p.distanceBetween(clusters(0).centroid)
         var index = 0
 
@@ -41,6 +47,9 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
             index = i
           }
         }
+
+        idx += 1
+        lines += (idx -> index)
 
         lists(index) ::= p
       }
@@ -54,7 +63,7 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
 
     }
 
-    clusters
+    lines
   }
 }
 
