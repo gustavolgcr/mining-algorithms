@@ -15,21 +15,6 @@ object DBSCAN {
     val Visited, Unvisited, Noise = Value
   }
 
-  def euclideanDistance(pointA: Array[Float], pointB: Array[Float]) : Float = {
-    var distance : Float = 0
-
-    if (pointA.length == pointB.length) {
-      for (i <- 0 until pointA.length) {
-        distance += scala.math.pow(pointA(i) - pointB(i), 2).toFloat
-      }
-
-      distance = scala.math.sqrt(distance).toFloat
-      return distance
-    }
-
-    return -1
-  }
-
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):
     ListBuffer[ArrayBuffer[Int]] = {
     clusters = new ListBuffer[ArrayBuffer[Int]]()
@@ -87,7 +72,7 @@ object DBSCAN {
     region += pointIndex
 
     for(it <- 0 until dataset.length) {
-      if(euclideanDistance(dataset(pointIndex), dataset(it)) <= eps) {
+      if(Similarity.euclidean(dataset(pointIndex), dataset(it)) <= eps) {
         region += it
       }
     }
