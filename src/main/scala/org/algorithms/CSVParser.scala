@@ -1,5 +1,7 @@
 package main.scala.org.algorithms
 
+import scala.collection.mutable.ListBuffer
+
 /**
  * Created by lsbd on 18/03/15.
  */
@@ -13,5 +15,18 @@ object CSVParser {
     src.close()
 
     return tempList
+  }
+
+  def toFloat(dataset: List[Array[String]]) : List[Array[Float]] = {
+    var newDataset = ListBuffer[Array[Float]]()
+
+    for(i <- 0 until dataset.length) {
+      newDataset += new Array[Float](dataset(i).length)
+      for(j <- 0 until newDataset(i).length) {
+        newDataset(i)(j) = dataset(i)(j).toFloat
+      }
+    }
+
+    return newDataset.toList
   }
 }
