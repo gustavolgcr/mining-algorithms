@@ -5,9 +5,9 @@ import scala.util.Random
 /**
  * Created by Iago on 19/03/2015.
  */
-class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
+object KMeans {
 
-  def execute: Array[Cluster] = {
+  def apply(data: List[Array[Float]], k : Int, cutoff : Float): Array[Cluster] = {
 
     /* Select k objects for initial centroids */
     var initial : Array[Point] = new Array[Point](k)

@@ -10,9 +10,7 @@ object test {
 
     var normalizedWines = Normalization.featureScaling(wines, 0, 100)
 
-    var kmeans = new KMeans(normalizedWines, 6, 0.1f)
-
-    var answer : Array[Cluster] = kmeans.execute
+    var answer = KMeans(normalizedWines, 6, 0.1f)
 
     for(i <- 0 until answer.length) {
       println("Cluster " + i)
