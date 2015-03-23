@@ -1,6 +1,7 @@
 package main.scala.org.algorithms
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import java.io._
 
 /**
  * Created by lsbd on 18/03/15.
@@ -15,6 +16,29 @@ object CSVParser {
     src.close()
 
     return tempList
+  }
+
+  def writeClustersFile(fileName: String, dataset: List[Array[String]], clusters: ListBuffer[ArrayBuffer[Int]], delimiter: Char = ';', noise: String = "-1") = {
+    // Initializer all instances as a noise
+    var clustersLabel = Array.fill(dataset.length)(noise)
+    var writer = new PrintWriter(new File(fileName))
+
+    // Make a map between one index of tuple in dataset to one cluster
+    for(i <- 0 until clusters.length) {
+      for(tuple <- clusters(i)) {
+        clustersLabel(tuple) = i.toString
+      }
+    }
+
+    for(i <- 0 until dataset.length) {
+      for(attribute <- dataset(i)) {
+        writer.write(attribute + delimiter)
+      }
+
+      writer.write(clustersLabel(i) + "\n")
+    }
+
+    writer.close()
   }
 
   def toFloat(dataset: List[Array[String]]) : List[Array[Float]] = {

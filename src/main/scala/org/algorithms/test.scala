@@ -6,24 +6,27 @@ package main.scala.org.algorithms
 object test {
   def main(args: Array[String]) {
 
+    var eps = 0.1f
+    var minPts = 4
+
     var wines = CSVParser.readFile("datasets/winequality-red.csv")
 
-    var normalizedWines = Normalization.featureScaling(wines, 0, 100)
+    var normalizedWines = Normalization.featureScaling(wines)
 
-    var answer = KMeans(normalizedWines, 6, 0.1f)
+    var clusters = DBSCAN(normalizedWines, eps, minPts)
 
-    for(i <- 0 until answer.length) {
+    CSVParser.writeClustersFile("winequality-red-clustered.csv", wines, clusters)
+
+    println("File created with success")
+    println("Numbe of clusters: " + clusters.length.toString)
+
+    // Print all clusters
+    for(i <- 0 until clusters.length) {
       println("Cluster " + i)
-      for(j <- 0 until answer(i).points.length-1) {
-        for(k <- 0 until answer(i).points(j).attributes.length) {
-          print(answer(i).points(j).attributes(k) + "; ")
-        }
-        print("\n")
-
+      for(tupleindex <- clusters(i)) {
+        print(tupleindex + " ")
       }
+      println("\n")
     }
-
-//    println(answer)
-
   }
 }
