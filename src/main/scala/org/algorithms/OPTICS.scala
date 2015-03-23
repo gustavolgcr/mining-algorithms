@@ -29,7 +29,7 @@ object OPTICS {
       if(pointState(it) == PointState.Unvisited) {
 
         pointState(it) = PointState.Visited
-        var neighborPts = regionQuery(dataset, pointIndex, eps)
+        //var neighborPts = regionQuery(dataset, pointIndex, eps)
       }
 
     }

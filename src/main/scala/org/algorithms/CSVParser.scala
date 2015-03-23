@@ -1,18 +1,22 @@
 package main.scala.org.algorithms
 
+
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import java.io._
+import scala.collection.mutable.HashMap
+import java.nio.file.{Paths, Files}
+import java.nio.charset.StandardCharsets
 
 /**
  * Created by lsbd on 18/03/15.
  */
 object CSVParser {
+
   def readFile(fileName: String, delimiter: Char = ';', dropNLines: Int = 1,
     dropNColumn: Int = 1) : List[Array[String]] = {
-    var src = scala.io.Source.fromFile(fileName);
-    var tempList = src.getLines().drop(dropNLines).map(_.split(delimiter)).
+    val src = scala.io.Source.fromFile(fileName);
+    val tempList = src.getLines().drop(dropNLines).map(_.split(delimiter)).
       map(_.dropRight(dropNColumn)).toList
-
     src.close()
 
     return tempList
@@ -41,6 +45,17 @@ object CSVParser {
     writer.close()
   }
 
+  def saveResult(filename: String, filename_original: String, map: HashMap[Int, Int]): Unit = {
+    val src = scala.io.Source.fromFile(filename_original).getLines.toArray
+
+    for ( (line, cluster) <- map ) {
+      src(line) += ";" + cluster.toString
+    }
+
+    Files.write(Paths.get(filename), src.mkString("\n").getBytes(StandardCharsets.UTF_8))
+
+  }
+
   def toFloat(dataset: List[Array[String]]) : List[Array[Float]] = {
     var newDataset = ListBuffer[Array[Float]]()
 
@@ -53,4 +68,5 @@ object CSVParser {
 
     return newDataset.toList
   }
+
 }
