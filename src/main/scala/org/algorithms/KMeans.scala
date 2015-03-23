@@ -10,8 +10,8 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
   def execute: Array[Cluster] = {
 
     /* Select k objects for initial centroids */
-    var initial : Array[Point] = new Array[Point](k)
-    var clusters :  Array[Cluster] = new Array[Cluster](k)
+    val initial : Array[Point] = new Array[Point](k)
+    val clusters :  Array[Cluster] = new Array[Cluster](k)
     for(i <- 0 until k) {
       initial(i) = new Point(data(Random.nextInt(data.size)))
       clusters(i) = new Cluster(List(initial(i)))
@@ -22,8 +22,9 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
     /* Iterate all objects */
     while (biggest_shift == -1 || biggest_shift > cutoff) {
 
-      var lists: Array[List[Point]] = new Array[List[Point]](k)
+      val lists: Array[List[Point]] = new Array[List[Point]](k)
 
+      /* Initializing the list */
       for (i <- 0 until k) {
         lists(i) = List[Point](null)
       }
@@ -34,7 +35,7 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
         var index = 0
 
         for (i <- 0 until k) {
-          var distance = p.distanceBetween(clusters(i).centroid)
+          val distance = p.distanceBetween(clusters(i).centroid)
           if (distance < smallest_distance) {
             smallest_distance = distance
             index = i
@@ -47,13 +48,13 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
       /* Check the value of modification, if so small then break! */
       biggest_shift = 0
       for (i <- 0 until k) {
-        var shift = clusters(i).update(lists(i))
+        val shift = clusters(i).update(lists(i))
         biggest_shift = math.max(biggest_shift, shift)
       }
 
     }
 
-    return clusters
+    clusters
   }
 }
 
@@ -64,7 +65,7 @@ class KMeans(data: List[Array[Float]], k : Int, cutoff : Float) {
 class Point(_attributes: Array[Float]) {
   var attributes : Array[Float] = _attributes
 
-  /* Euclidian distance */
+  /* Euclidean distance */
   def distanceBetween(point: Point) : Float = {
     var distance : Float = 0
 
@@ -78,7 +79,7 @@ class Point(_attributes: Array[Float]) {
 
     }
 
-    return -1
+    -1
   }
 }
 
@@ -88,17 +89,17 @@ class Cluster(_points: List[Point]) {
   var centroid : Point = null
 
   def update(_points: List[Point]): Float = {
-    var old_centroid : Point  = this.centroid
+    val old_centroid : Point  = this.centroid
     this.points = _points
     this.centroid = this.calcCentroid()
-    return old_centroid.distanceBetween(this.centroid)
+    old_centroid.distanceBetween(this.centroid)
   }
 
   /*
   * Calculate the centroid of cluster
   */
   def calcCentroid() : Point = {
-    var centroid : Array[Float] = new Array[Float](this.points.head.attributes.length)
+    val centroid : Array[Float] = new Array[Float](this.points.head.attributes.length)
     for (p <- this.points) {
       if (p != null) {
         for (i <- 0 until p.attributes.length) {
@@ -106,11 +107,11 @@ class Cluster(_points: List[Point]) {
         }
       }
     }
-    return new Point(centroid)
+    new Point(centroid)
   }
 
   def updateCentroid() {
-    this.centroid = this.calcCentroid();
+    this.centroid = this.calcCentroid()
   }
 
 }

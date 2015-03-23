@@ -6,17 +6,18 @@ package main.scala.org.algorithms
 object test {
   def main(args: Array[String]) {
 
-    var wines = CSVParser.readFile("datasets/winequality-red.csv")
+    var wines = CSVParser.readFile("datasets/iris.csv")
 
-    var normalizedWines = Normalization.featureScaling(wines, 0, 100)
+    var normalizedWines = Normalization.featureScaling(wines, 0, 1)
 
-    var kmeans = new KMeans(normalizedWines, 6, 0.1f)
+    var kmeans = new KMeans(normalizedWines, 3, 0.001f)
 
     var answer : Array[Cluster] = kmeans.execute
 
     for(i <- 0 until answer.length) {
       println("Cluster " + i)
       for(j <- 0 until answer(i).points.length-1) {
+        print(j + " : ")
         for(k <- 0 until answer(i).points(j).attributes.length) {
           print(answer(i).points(j).attributes(k) + "; ")
         }
