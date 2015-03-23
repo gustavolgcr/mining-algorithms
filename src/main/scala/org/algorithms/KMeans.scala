@@ -8,11 +8,7 @@ import scala.util.Random
  */
 object KMeans {
 
-<<<<<<< HEAD
   def apply(data: List[Array[Float]], k : Int, cutoff : Float): HashMap[Int, Int] = {
-=======
-  def apply(data: List[Array[Float]], k : Int, cutoff : Float): Array[Cluster] = {
->>>>>>> 2aef93f009d20ca051967bf90f0fdb6ebe2f4f65
 
     /* Select k objects for initial centroids */
     val initial : Array[Point] = new Array[Point](k)
