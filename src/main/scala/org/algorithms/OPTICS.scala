@@ -2,9 +2,6 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
-/**
- * Created by gustavolgcr on 3/23/15.
- */
 object OPTICS {
 
   var pointState:Array[PointState.PointState] = null;

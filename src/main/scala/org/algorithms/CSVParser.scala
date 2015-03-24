@@ -7,9 +7,6 @@ import scala.collection.mutable.HashMap
 import java.nio.file.{Paths, Files}
 import java.nio.charset.StandardCharsets
 
-/**
- * Created by lsbd on 18/03/15.
- */
 object CSVParser {
 
   def readFile(fileName: String, delimiter: Char = ';', dropNLines: Int = 1,

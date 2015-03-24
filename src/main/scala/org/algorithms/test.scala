@@ -2,9 +2,6 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.HashMap
 
-/**
- * Created by gustavolgcr on 3/17/15.
- */
 object test {
   def testKMeans(): Unit = {
     val wines = CSVParser.readFile("datasets/winequality-red.csv")

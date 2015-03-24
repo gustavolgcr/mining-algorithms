@@ -3,9 +3,6 @@ package main.scala.org.algorithms
 import scala.collection.mutable.HashMap
 import scala.util.Random
 
-/**
- * Created by Iago on 19/03/2015.
- */
 object KMeans {
 
   def apply(data: List[Array[Float]], k : Int, cutoff : Float): HashMap[Int, Int] = {

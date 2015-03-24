@@ -2,9 +2,6 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.ListBuffer
 
-/**
- * Created by rui on 3/18/15.
- */
 object Normalization {
   def featureScaling(sourceList: List[Array[String]], a: Float = 0, b:Float = 1) : List[Array[Float]] = {
 

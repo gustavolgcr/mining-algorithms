@@ -1,8 +1,5 @@
 package main.scala.org.algorithms
 
-/**
- * Created by on 23/03/15.
- */
 object Similarity {
   def euclidean(pointA: Array[Float], pointB: Array[Float]) : Float = {
     var distance : Float = 0

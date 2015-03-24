@@ -2,9 +2,6 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
-/**
- * Created by rui on 3/19/15.
- */
 object DBSCAN {
   var pointState:Array[PointState.PointState] = null;
   var pointInACluster:Array[Boolean] = null;
