@@ -1,6 +1,7 @@
 package main.scala.org.algorithms
 
-import scala.collection.mutable.HashMap
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue, HashMap}
 
 object test {
   def testKMeans(): Unit = {
@@ -38,8 +39,37 @@ object test {
     }
   }
 
+//  def HashMapOrdering = new Ordering[HashMap[Int,Float]] {
+//    def compare(a : HashMap[Int,Float], b : HashMap[Int,Float]) = b.valuesIterator.next().compare(a.valuesIterator.next())
+//
+//  }
+
   def main(args: Array[String]) {
     testKMeans
     testDBSCAN
+
+//    var seeds = PriorityQueue[HashMap[Int, Float]]()(HashMapOrdering)
+//
+//    seeds.enqueue(HashMap(4 -> 4f), HashMap(234 -> 5f), HashMap(78 -> 6f), HashMap(89 -> 1f))
+//
+//
+//    seeds.find(x => x.get(89) == 1f) match {
+//      case Some(hashMap: HashMap[Int, Float]) => hashMap.put(77,32f)//; hashMap.put(234, 234f)
+//      case None => println("Not found")
+    }
+
+//    pq.find(x => x.priority == 0) match {
+//      case Some(elem: Elem) => elem.priority = 3
+//      case None => println("Not found")
+//    }
+
+
+//    for(i <- 0 until seeds.length) {
+//      println(seeds.dequeue())
+//    }
+
+
+
+
   }
 }

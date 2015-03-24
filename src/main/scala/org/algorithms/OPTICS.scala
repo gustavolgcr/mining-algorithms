@@ -1,6 +1,8 @@
 package main.scala.org.algorithms
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue}
+import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue, HashMap}
+
+
 
 object OPTICS {
 
@@ -14,10 +16,22 @@ object OPTICS {
     val Visited, Unvisited, Noise = Value
   }
 
+
+  def HashMapOrdering = new Ordering[HashMap[Int,Float]] {
+    def compare(a : HashMap[Int,Float], b : HashMap[Int,Float]) = b.valuesIterator.next().compare(a.valuesIterator.next())
+
+  }
+
+
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):ListBuffer[ArrayBuffer[Int]] = {
 
     clusters = new ListBuffer[ArrayBuffer[Int]]()
     reachabilityDistance = Array.fill(dataset.length)(-1)
+
+
+    var seeds = PriorityQueue[HashMap[Int, Float]]()(HashMapOrdering)
+    seeds.enqueue(HashMap(4 -> 4f), HashMap(234 -> 5f), HashMap(78 -> 6f), HashMap(89 -> 1f))
+
 
     for(it <- 0 until dataset.length) {
 
