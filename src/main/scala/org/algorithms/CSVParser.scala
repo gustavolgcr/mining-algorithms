@@ -19,6 +19,7 @@ object CSVParser {
     return tempList
   }
 
+  //Manoel Rui
   def writeClustersFile(fileName: String, dataset: List[Array[String]], clusters: ListBuffer[ArrayBuffer[Int]], delimiter: Char = ';', noise: String = "-1") = {
     // Initializer all instances as a noise
     var clustersLabel = Array.fill(dataset.length)(noise)
@@ -42,6 +43,7 @@ object CSVParser {
     writer.close()
   }
 
+  //Iago Chaves
   def saveResult(filename: String, filename_original: String, map: HashMap[Int, Int]): Unit = {
     val src = scala.io.Source.fromFile(filename_original).getLines.toArray
 
