@@ -4,7 +4,6 @@ import scala.collection.mutable.HashMap
 import scala.util.Random
 
 object KMeans {
-
   def apply(data: List[Array[Float]], k : Int, cutoff : Float): HashMap[Int, Int] = {
 
     /* Select k objects for initial centroids */
@@ -60,7 +59,7 @@ object KMeans {
 
     }
 
-    lines
+    return lines
   }
 }
 
@@ -85,7 +84,7 @@ class Point(_attributes: Array[Float]) {
 
     }
 
-    -1
+    return -1
   }
 }
 
@@ -98,7 +97,7 @@ class Cluster(_points: List[Point]) {
     val old_centroid : Point  = this.centroid
     this.points = _points
     this.centroid = this.calcCentroid()
-    old_centroid.distanceBetween(this.centroid)
+    return old_centroid.distanceBetween(this.centroid)
   }
 
   /*
@@ -113,11 +112,10 @@ class Cluster(_points: List[Point]) {
         }
       }
     }
-    new Point(centroid)
+    return new Point(centroid)
   }
 
   def updateCentroid() {
     this.centroid = this.calcCentroid()
   }
-
 }
