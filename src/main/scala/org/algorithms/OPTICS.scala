@@ -17,8 +17,8 @@ object OPTICS {
   }
 
 
-  def HashMapOrdering = new Ordering[HashMap[Int,Float]] {
-    def compare(a : HashMap[Int,Float], b : HashMap[Int,Float]) = b.valuesIterator.next().compare(a.valuesIterator.next())
+  def HashMapOrdering = new Ordering[HashMap[Int,Int]] {
+    def compare(a : HashMap[Int,Int], b : HashMap[Int,Int]) = b.valuesIterator.next().compare(a.valuesIterator.next())
 
   }
 
@@ -29,8 +29,18 @@ object OPTICS {
     reachabilityDistance = Array.fill(dataset.length)(-1)
 
 
-    var seeds = PriorityQueue[HashMap[Int, Float]]()(HashMapOrdering)
-    seeds.enqueue(HashMap(4 -> 4f), HashMap(234 -> 5f), HashMap(78 -> 6f), HashMap(89 -> 1f))
+    var seeds = PriorityQueue[HashMap[Int, Int]]()(HashMapOrdering)
+
+    seeds.enqueue(HashMap(4 -> 4), HashMap(234 -> 5), HashMap(78 -> 6), HashMap(89 -> 1))
+
+    seeds.find(x => x.get(234) == Some(5)) match {
+      case Some(hashMap: HashMap[Int, Int]) => {
+
+        hashMap.update(234, 7)
+
+      }
+      case None => println("Not found")
+    }
 
 
     for(it <- 0 until dataset.length) {
