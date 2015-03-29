@@ -2,23 +2,24 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue, HashMap}
 
-class OPTICSPoint(_pointIndex: Int, _reachDist: Float = -1) {
+class OPTICSPoint(_pointIndex: Int, _reachDistance: Float = -1, _coreDistance: Float = -1) {
   var pointIndex: Int = _pointIndex;
-  var reachDist: Float = _reachDist;
+  var reachDistance: Float = _reachDistance;
+  var coreDistance: Float = _coreDistance;
 }
 
 class OPTICSPriorityQueue {
   var seeds = PriorityQueue[OPTICSPoint]()(OPTICSPointOrdering);
 
   def OPTICSPointOrdering = new Ordering[OPTICSPoint] {
-    def compare(a : OPTICSPoint, b : OPTICSPoint) = b.reachDist.compareTo(a.reachDist)
+    def compare(a : OPTICSPoint, b : OPTICSPoint) = b.reachDistance.compareTo(a.reachDistance)
   }
 
   // TODO: To fix ordering for float point between 0.0 and 1.0
   def updatePoint(point: Int, reachDistance: Float) = {
     this.seeds.find(x => Some(x.pointIndex) == Some(point)) match {
       case Some(p: OPTICSPoint) => {
-        p.reachDist = reachDistance
+        p.reachDistance = reachDistance
       }
     }
   }
@@ -26,56 +27,69 @@ class OPTICSPriorityQueue {
 
 object OPTICS {
   var pointState:Array[PointState.PointState] = null;
-  var clusters: ListBuffer[ArrayBuffer[Int]] = null;
-  var reachabilityDistance:Array[Double] = null;
+  var pQueue:OPTICSPriorityQueue = null;
+  var datasetPoints:Array[OPTICSPoint] = null;
 
   object PointState extends Enumeration {
     type PointState = Value
     val Visited, Unvisited = Value
   }
 
-  // TODO: The return will be a List of elements where each one will contains a point and reachability distance
-  def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):ListBuffer[ArrayBuffer[Int]] = {
-    //clusters = new ListBuffer[ArrayBuffer[Int]]()
-    reachabilityDistance = Array.fill(dataset.length)(-1.0f)
+  def apply(dataset: List[Array[Float]], eps: Float, minPts: Int) : ListBuffer[OPTICSPoint] = {
+    pointState = Array.fill(dataset.length)(PointState.Unvisited)
+    datasetPoints = new Array[OPTICSPoint](dataset.length)
+    pQueue = new OPTICSPriorityQueue
+    var resulList = new ListBuffer[OPTICSPoint]
 
-    for(it <- 0 until dataset.length) {
-      var pointIndex = it
-      var neighborPts = regionQuery(dataset, pointIndex, eps)
+    // Initialize OPTICPoint's array
+    for(pointIndex <- 0 until datasetPoints.length) {
+      datasetPoints(pointIndex) = new OPTICSPoint(pointIndex, -1)
+    }
 
-      pointState(pointIndex) = PointState.Visited
-      // TODO: write this element in resultList
+    for(point <- datasetPoints) {
+      if(pointState(point.pointIndex) == PointState.Unvisited) {
+        var neighborPts = regionQuery(dataset, point.pointIndex, eps)
 
-      if(coreDistance(dataset, neighborPts, pointIndex, eps, minPts) != -1) {
+        pointState(point.pointIndex) = PointState.Visited
+        resulList += point
 
+        point.coreDistance = coreDistance(dataset, neighborPts, point.pointIndex, eps, minPts)
+        if (point.coreDistance != -1) {
+          update(dataset, neighborPts, point, pQueue, eps, minPts)
+
+          while(!pQueue.seeds.isEmpty) {
+            var pointNeighbor = pQueue.seeds.dequeue()
+            var newNeighbors = regionQuery(dataset, pointNeighbor.pointIndex, eps)
+            pointNeighbor.coreDistance = coreDistance(dataset, newNeighbors, pointNeighbor.pointIndex, eps, minPts)
+            resulList += pointNeighbor
+
+            if(pointNeighbor.coreDistance != -1) {
+              update(dataset, newNeighbors, pointNeighbor, pQueue, eps,minPts)
+            }
+          }
+        }
       }
     }
 
-    return clusters
+    return resulList
   }
 
-  def update(dataset: List[Array[Float]], neighbors: Set[Int], pointIndex: Int, Seeds: PriorityQueue[Int], eps: Float, minPoints: Int) : Unit = {
-    var coredist = coreDistance(dataset, neighbors, pointIndex, eps, minPoints)
+  def update(dataset: List[Array[Float]], neighbors: Set[Int], point: OPTICSPoint, Seeds: OPTICSPriorityQueue, eps: Float, minPoints: Int) : Unit = {
+    var coredist = point.coreDistance
     var neighborList = neighbors.toList
 
     for (it <- 0 until neighborList.length) {
       if(pointState(neighborList(it)) == PointState.Unvisited) {
-        // pointState(neighborList(it)) = PointState.Visited ???
-        var newReachDist = math.max(coredist, Similarity.euclidean(dataset(pointIndex), dataset(neighborList(it))))
+        // TODO: pointState(neighborList(it)) = PointState.Visited or just for neighbor of point ???
+        var newReachDist = math.max(coredist, Similarity.euclidean(dataset(point.pointIndex), dataset(neighborList(it))))
 
-        if(reachabilityDistance(neighborList(it)) == -1) {
-          reachabilityDistance(neighborList(it)) = newReachDist
-
-          // TODO: enqueue the element neighborList(it)
-          // priorityQueue(neighborList(it))
+        if(datasetPoints(neighborList(it)).reachDistance == -1) {
+          datasetPoints(neighborList(it)).reachDistance = newReachDist
+          pQueue.seeds.enqueue(datasetPoints(neighborList(it)))
+        } else if (newReachDist < datasetPoints(neighborList(it)).reachDistance) {
+          datasetPoints(neighborList(it)).reachDistance = newReachDist
+          pQueue.updatePoint(neighborList(it), newReachDist)
         }
-
-        // TODO: update the newReachDist of the object and inside of priority queue
-        /* else if (newReachDist < reachabilityDistance(neighborList(it))) {
-          reachabilityDistance(neighborList(it))) = newReachDist
-          priorityQueue.update(neighborList(it), newReachDist)
-        } */
-
       }
     }
   }
