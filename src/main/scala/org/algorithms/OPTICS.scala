@@ -15,11 +15,12 @@ class OPTICSPriorityQueue {
     def compare(a : OPTICSPoint, b : OPTICSPoint) = b.reachDistance.compareTo(a.reachDistance)
   }
 
-  // TODO: To fix ordering for float point between 0.0 and 1.0
   def updatePoint(point: Int, reachDistance: Float) = {
     this.seeds.find(x => Some(x.pointIndex) == Some(point)) match {
       case Some(p: OPTICSPoint) => {
         p.reachDistance = reachDistance
+        // Creates a new queue and force the function to compare and update values
+        this.seeds = this.seeds.clone()
       }
     }
   }
