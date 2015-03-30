@@ -103,21 +103,22 @@ object OPTICS {
       return -1
 
     } else {
-
       distance += Similarity.euclidean(dataset(pointIndex), dataset(neighborList(0)))
 
       for(it <- 1 until neighborList.length) {
 
-        var it2 = distance.length
+        var lastIndex = distance.length
 
-        while(Similarity.euclidean(dataset(pointIndex), dataset(neighborList(it))) < distance(it2)) {
-          distance(it2+1) = distance(it2)
-          distance(it2) = Similarity.euclidean(dataset(pointIndex), dataset(neighborList(it)))
-          it2 = it2-1
+        var tempEuclideanDistance = Similarity.euclidean(dataset(pointIndex), dataset(neighborList(it)))
+        distance += tempEuclideanDistance
+        while(lastIndex >= 0 && tempEuclideanDistance < distance(lastIndex)) {
+          distance(lastIndex + 1) = distance(lastIndex)
+          distance(lastIndex) = tempEuclideanDistance
+          lastIndex = lastIndex - 1
         }
       }
 
-      return distance(minPoints)
+      return distance(minPoints-1)
     }
   }
 
