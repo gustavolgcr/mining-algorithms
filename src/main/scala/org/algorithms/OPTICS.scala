@@ -81,7 +81,7 @@ object OPTICS {
 
     for (it <- 0 until neighborList.length) {
       if(pointState(neighborList(it)) == PointState.Unvisited) {
-        // TODO: pointState(neighborList(it)) = PointState.Visited or just for neighbor of point ???
+        pointState(neighborList(it)) = PointState.Visited
         var newReachDist = math.max(coredist, Similarity.euclidean(dataset(point.pointIndex), dataset(neighborList(it))))
 
         if(datasetPoints(neighborList(it)).reachDistance == -1) {
