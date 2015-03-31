@@ -150,7 +150,7 @@ object OPTICS {
 
       if(point.reachDistance>ei){
         if(point.coreDistance<=ei){
-          clusterID = pQueue.seeds.dequeue().pointIndex
+          clusterID = clusterID+1
           point.coreDistance = clusterID
         } else {
           point.coreDistance = -1
