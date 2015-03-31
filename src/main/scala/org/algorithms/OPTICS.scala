@@ -23,7 +23,7 @@ class OPTICSPriorityQueue {
         // See what happen with values between 0 and 1.
         // Test if the priority of the queue change when we update the hash value.
         // Creates a new queue and force the function to compare and update values.
-        //this.seeds = this.seeds.clone()
+        this.seeds = this.seeds.clone()
       }
       case None => println("Not found")
     }
@@ -141,7 +141,26 @@ object OPTICS {
     return region.toSet
   }
 
+  def extractDBSCAN(pQueue: OPTICSPriorityQueue, ei: Float, minPoints: Int): Unit = {
+    var clusterID = -1
 
+    while(!pQueue.seeds.isEmpty){
+
+      var point = pQueue.seeds.dequeue()
+
+      if(point.reachDistance>ei){
+        if(point.coreDistance<=ei){
+          clusterID = pQueue.seeds.dequeue().pointIndex
+          point.coreDistance = clusterID
+        } else {
+          point.coreDistance = -1
+        }
+      } else {
+        point.coreDistance = clusterID
+      }
+
+    }
+  }
 
 }
 
