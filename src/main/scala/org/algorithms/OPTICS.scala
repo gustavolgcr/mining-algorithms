@@ -19,9 +19,13 @@ class OPTICSPriorityQueue {
     this.seeds.find(x => Some(x.pointIndex) == Some(point)) match {
       case Some(p: OPTICSPoint) => {
         p.reachDistance = reachDistance
-        // Creates a new queue and force the function to compare and update values
-        this.seeds = this.seeds.clone()
+
+        // See what happen with values between 0 and 1.
+        // Test if the priority of the queue change when we update the hash value.
+        // Creates a new queue and force the function to compare and update values.
+        //this.seeds = this.seeds.clone()
       }
+      case None => println("Not found")
     }
   }
 }
@@ -45,6 +49,7 @@ object OPTICS {
     // Initialize OPTICPoint's array
     for(pointIndex <- 0 until datasetPoints.length) {
       datasetPoints(pointIndex) = new OPTICSPoint(pointIndex, -1)
+
     }
 
     for(point <- datasetPoints) {
@@ -135,4 +140,8 @@ object OPTICS {
 
     return region.toSet
   }
+
+
+
 }
+
