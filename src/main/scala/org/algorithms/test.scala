@@ -38,6 +38,21 @@ object test {
     }
   }
 
+  def testOPTICS: Unit = {
+
+    var eps = 0.1f
+    var minPts = 4
+
+    var wines = CSVParser.readFile("datasets/winequality-red.csv")
+
+    var normalizedWines = Normalization.featureScaling(wines)
+
+    var clusters = OPTICS(normalizedWines, eps, minPts)
+
+
+  }
+
+
   def main(args: Array[String]) {
     testKMeans
     testDBSCAN
