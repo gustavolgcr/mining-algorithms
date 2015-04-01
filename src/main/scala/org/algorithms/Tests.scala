@@ -1,5 +1,7 @@
 package main.scala.org.algorithms
 
+import java.io.{File, PrintWriter}
+
 import scala.collection.mutable
 import scala.collection.mutable.{PriorityQueue, HashMap}
 
@@ -44,18 +46,37 @@ object Tests {
     var eps = 0.4f
     var minPts = 4
 
-    var wines = CSVParser.readFile("datasets/winequality-red.csv")
+    var wines = CSVParser.readFile("datasets/complex9.txt", ',', 0, 1)
+
+//    for(wines <- wines){
+//      println(wines(0))
+//    }
+
+    println("Dataset read.")
 
     var normalizedWines = Normalization.featureScaling(wines)
 
+    println("Dataset normalized.")
+
     var clusters = OPTICS(normalizedWines, eps, minPts)
 
+    println("Clusters found.")
+
+    OPTICS.extractDBSCAN(clusters, 0.1f, 4)
+
+    //Print on screen
     for(i <- 0 until clusters.length) {
-
-      println("pointIndex: " + clusters(i).pointIndex + " reachDistance: " + clusters(i).reachDistance + " coreDistance: " + clusters(i).coreDistance)
-//      println(clusters(i).reachDistance)
-
+      println("pointIndex: " + clusters(i).pointIndex + " reachDistance: " + clusters(i).reachDistance + " coreDistance: " + clusters(i).coreDistance + " clusterID: " + clusters(i).clusterID)
     }
+
+    var writer = new PrintWriter(new File("resultOptics"))
+
+    //Print on file
+    for(i <- 0 until clusters.length) {
+      writer.write(clusters(i).pointIndex + " " + clusters(i).reachDistance + "\n")
+    }
+
+    writer.close()
 
 //    CSVParser.writeClustersFile("winequality-red-clustered.csv", wines, clusters)
 //
@@ -76,7 +97,7 @@ object Tests {
 
   def main(args: Array[String]) {
     //testKMeans
-    //testDBSCAN
+//    testDBSCAN
 
 //    var p = new OPTICSPriorityQueue
 //

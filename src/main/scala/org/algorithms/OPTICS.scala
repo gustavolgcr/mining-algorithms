@@ -3,12 +3,16 @@ package main.scala.org.algorithms
 import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue, HashMap}
 
 class OPTICSPoint(_pointIndex: Int, _reachDistance: Float = -1, _coreDistance: Float = -1) {
+
   var pointIndex: Int = _pointIndex;
   var reachDistance: Float = _reachDistance;
   var coreDistance: Float = _coreDistance;
+  var clusterID: Int = -1;
+
 }
 
 class OPTICSPriorityQueue {
+
   var seeds = PriorityQueue[OPTICSPoint]()(OPTICSPointOrdering);
 
   def OPTICSPointOrdering = new Ordering[OPTICSPoint] {
@@ -25,12 +29,13 @@ class OPTICSPriorityQueue {
         // Creates a new queue and force the function to compare and update values.
         this.seeds = this.seeds.clone()
       }
-      case None => println("Not found")
+      case None =>
     }
   }
 }
 
 object OPTICS {
+
   var pointState:Array[PointState.PointState] = null;
   var pQueue:OPTICSPriorityQueue = null;
   var datasetPoints:Array[OPTICSPoint] = null;
@@ -41,7 +46,9 @@ object OPTICS {
   }
 
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int) : ListBuffer[OPTICSPoint] = {
+
     pointState = Array.fill(dataset.length)(PointState.Unvisited)
+
     datasetPoints = new Array[OPTICSPoint](dataset.length)
     pQueue = new OPTICSPriorityQueue
     var resulList = new ListBuffer[OPTICSPoint]
@@ -141,22 +148,21 @@ object OPTICS {
     return region.toSet
   }
 
-  def extractDBSCAN(pQueue: OPTICSPriorityQueue, ei: Float, minPoints: Int): Unit = {
+  def extractDBSCAN(pQueue: ListBuffer[OPTICSPoint], ei: Float, minPoints: Int): Unit = {
     var clusterID = -1
 
-    while(!pQueue.seeds.isEmpty){
+    for(point <- pQueue) {
 
-      var point = pQueue.seeds.dequeue()
 
       if(point.reachDistance>ei){
         if(point.coreDistance<=ei){
           clusterID = clusterID+1
-          point.coreDistance = clusterID
+          point.clusterID = clusterID
         } else {
-          point.coreDistance = -1
+          point.clusterID = -1
         }
       } else {
-        point.coreDistance = clusterID
+        point.clusterID = clusterID
       }
 
     }
