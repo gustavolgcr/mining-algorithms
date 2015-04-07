@@ -2,11 +2,11 @@ package main.scala.org.algorithms
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer, PriorityQueue, HashMap}
 
-class OPTICSPoint(_pointIndex: Int, _reachDistance: Float = -1, _coreDistance: Float = -1,
+class OPTICSPoint(_pointIndex: Int, _reachDistance: Float = -1f, _coreDistance: Float = -1f,
                   _dataPoint: Array[Float] = null, _isProcessed: Boolean = false, _clusterId: Int = -1) {
 
   var pointIndex: Int = _pointIndex
-  var reachDistance: Float = Float.MaxValue
+  var reachDistance: Float = _reachDistance
   var coreDistance: Float = _coreDistance
   var dataPoint: Array[Float] = _dataPoint
   var isProcessed: Boolean = _isProcessed
@@ -44,15 +44,18 @@ object OPTICS {
 
     for(point <- datasetPoints) {
 
+//      for each unprocessed point p of DB
       if(point.isProcessed == false) {
 
+//        N = getNeighbors(p, eps)
         var neighborhoodPoints = regionQuery(datasetPoints, point, eps)
 
+//        mark p as processed
         point.isProcessed = true
         point.coreDistance = coreDistance(datasetPoints, neighborhoodPoints, point, eps, minPts)
         resulList += point
 
-        if (point.coreDistance < Float.MaxValue) {
+        if (point.coreDistance != -1f) {
 
           update(datasetPoints, neighborhoodPoints, point, priorityQueue, eps, minPts)
 
@@ -61,10 +64,11 @@ object OPTICS {
             var pointNeighbor = priorityQueue.seeds.dequeue()
 
             neighborhoodPoints = regionQuery(datasetPoints, pointNeighbor, eps)
+            pointNeighbor.isProcessed = true
             pointNeighbor.coreDistance = coreDistance(datasetPoints, neighborhoodPoints, pointNeighbor, eps, minPts)
             resulList += pointNeighbor
 
-            if(pointNeighbor.coreDistance != -1) {
+            if(pointNeighbor.coreDistance != -1f) {
 
               update(datasetPoints, neighborhoodPoints, point, priorityQueue, eps, minPts)
             }
@@ -79,14 +83,14 @@ object OPTICS {
   def update(datasetPoints: Array[OPTICSPoint], neighborhoodPoints: Set[OPTICSPoint], point: OPTICSPoint, priorityQueue: OPTICSPriorityQueue, eps: Float, minPoints: Int) : Unit = {
 
     var coreDistance = point.coreDistance
-    var neighborhoodList = neighborhoodPoints.toList
 
-    for (neighborhoodIterator <- neighborhoodList) {
+
+    for (neighborhoodIterator <- neighborhoodPoints) {
       if(neighborhoodIterator.isProcessed == false) {
 
         var newReachDistance = math.max(coreDistance, Similarity.euclidean(neighborhoodIterator.dataPoint, point.dataPoint))
 
-        if(neighborhoodIterator.reachDistance == -1) {
+        if(neighborhoodIterator.reachDistance == -1f) {
 
           neighborhoodIterator.reachDistance = newReachDistance
 
@@ -95,6 +99,10 @@ object OPTICS {
         } else {
 
           if (newReachDistance < neighborhoodIterator.reachDistance) {
+
+            println("newReachDistance: " + newReachDistance)
+            println("neighborhoodIterator.reachDistance: " + neighborhoodIterator.reachDistance)
+
             neighborhoodIterator.reachDistance = newReachDistance
             priorityQueue.updatePoint(neighborhoodIterator.pointIndex, newReachDistance)
 
@@ -107,29 +115,33 @@ object OPTICS {
   def coreDistance(datasetPoints: Array[OPTICSPoint], neighborhoodPoints: Set[OPTICSPoint], point: OPTICSPoint, eps: Float, minPoints: Int) : Float = {
 
     def ordering = new Ordering[Float] {
+
       def compare(a : Float, b : Float) = b.compareTo(a)
+
     }
 
     var distance = new PriorityQueue[Float]()(ordering)
 
-    var neighborhoodList = neighborhoodPoints.toList
+    if(neighborhoodPoints.size < minPoints) {
 
-    if(neighborhoodList.length < minPoints) {
-
-      return -1
+      return -1f
 
     } else {
 
-      for(it <- 1 until neighborhoodList.length) {
-        distance.enqueue(Similarity.euclidean(point.dataPoint, neighborhoodList(it).dataPoint))
+      for(iterator <- neighborhoodPoints) {
+
+        distance.enqueue(Similarity.euclidean(point.dataPoint, iterator.dataPoint))
+
       }
 
-      for(it <- 0 until minPoints-2) {
-        distance.dequeue()
-      }
-
-      return distance.dequeue()
     }
+
+    for(it <- 0 until minPoints) {
+      distance.dequeue()
+    }
+
+    return distance.dequeue()
+
   }
 
   def regionQuery(datasetPoints: Array[OPTICSPoint], point: OPTICSPoint, eps: Float):Set[OPTICSPoint] = {

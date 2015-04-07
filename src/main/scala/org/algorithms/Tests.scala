@@ -44,12 +44,12 @@ object Tests {
 
   def testOPTICS: Unit = {
 
-    var eps = 0.1f
+    var eps = 0.25f
     var minPts = 4
 
     var datasetPoints:Array[OPTICSPoint] = null;
 
-    var wines = CSVParser.readFile("datasets/diamonds9.txt", ',', 0, 1)
+    var wines = CSVParser.readFile("datasets/complex9.txt", ',', 0, 1)
     println("Dataset read.")
 
     var normalizedWines = Normalization.featureScaling(wines)
@@ -60,7 +60,7 @@ object Tests {
     println("Populating array of Points.")
     for(iterator <- 0 until datasetPoints.length) {
 
-      datasetPoints(iterator) = new OPTICSPoint(iterator, -1, -1, normalizedWines(iterator), false, -1)
+      datasetPoints(iterator) = new OPTICSPoint(iterator, -1f, -1f, normalizedWines(iterator), false, -1)
     }
 
     var clusters = OPTICS(datasetPoints, eps, minPts)
@@ -68,7 +68,24 @@ object Tests {
     println("Clusters found.")
 
     println("Extracting clusters.")
-    OPTICS.extractDBSCAN(clusters, 0.035f, 4)
+    OPTICS.extractDBSCAN(clusters, 0.15f, 4)
+
+    var writer2 = new PrintWriter(new File("reachDistanceResult.txt"))
+
+        for(i <- 0 until clusters.length) {
+
+//          for(iterator <- clusters(i).dataPoint) {
+//            writer.write(iterator + " ")
+//          }
+          writer2.write(clusters(i).pointIndex + " " + clusters(i).reachDistance + "\n")
+
+        }
+
+    writer2.close()
+
+//    for(i <- 0 until clusters.length) {
+//       println("pointIndex: " + clusters(i).pointIndex + " reachDistance: " + clusters(i).reachDistance + " coreDistance: " + clusters(i).coreDistance + " clusterID: " + clusters(i).clusterID)
+//       }
 
     var writer = new PrintWriter(new File("resultOptics.txt"))
 
@@ -87,8 +104,8 @@ object Tests {
 
   def main(args: Array[String]) {
 
-    testKMeans
-    testDBSCAN
+//    testKMeans
+//    testDBSCAN
     testOPTICS
 
   }
