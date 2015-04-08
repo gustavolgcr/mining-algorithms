@@ -122,7 +122,7 @@ object OPTICS {
 
     var distance = new PriorityQueue[Float]()(ordering)
 
-    if(neighborhoodPoints.size < minPoints) {
+    if(neighborhoodPoints.size <= minPoints) {
 
       return -1f
 
