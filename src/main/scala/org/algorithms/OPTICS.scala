@@ -108,7 +108,7 @@ object OPTICS {
 
     var distance = new PriorityQueue[Float]()(ordering)
 
-    if(neighborhoodPoints.size <= minPoints) {
+    if(neighborhoodPoints.size < minPoints) {
       return -1f
     } else {
       for(iterator <- neighborhoodPoints) {
@@ -116,7 +116,7 @@ object OPTICS {
       }
     }
 
-    for(it <- 0 until minPoints) {
+    for(it <- 0 until minPoints-1) {
       distance.dequeue()
     }
 
@@ -136,12 +136,12 @@ object OPTICS {
     return neighbors.toSet
   }
 
-  def extractDBSCAN(pQueue: ListBuffer[OPTICSPoint], ei: Float, minPoints: Int): Unit = {
+  def extractDBSCAN(pQueue: ListBuffer[OPTICSPoint], eps: Float, minPoints: Int): Unit = {
     var clusterID = -1
 
     for(point <- pQueue) {
-      if(point.reachDistance>ei){
-        if(point.coreDistance<=ei){
+      if(point.reachDistance > eps){
+        if(point.coreDistance <= eps){
           clusterID = clusterID + 1
           point.clusterID = clusterID
         } else {

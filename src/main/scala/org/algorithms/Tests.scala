@@ -18,23 +18,21 @@ object Tests {
   }
 
   def testDBSCAN: Unit = {
-    var eps = 0.1f
-    var minPts = 4
+    var eps = 0.02607f // melhores valores para o complex9
+    var minPts = 3
 
-    var wines = CSVParser.readFile("datasets/winequality-red.csv")
+    var wines = CSVParser.readFile("datasets/complex9.txt", ',', 0, 1)
 
     var normalizedWines = Normalization.featureScaling(wines)
 
     var clusters = DBSCAN(normalizedWines, eps, minPts)
 
-    CSVParser.writeClustersFile("winequality-red-clustered.csv", wines, clusters)
-
     println("File created with success")
-    println("Numbe of clusters: " + clusters.length.toString)
+    println("Number of clusters: " + clusters.length.toString)
 
     // Print all clusters
     for(i <- 0 until clusters.length) {
-      println("Cluster " + i)
+      println("Cluster " + i + " - Length = " + clusters(i).length.toString)
       for (tupleindex <- clusters(i)) {
         print(tupleindex + " ")
       }
@@ -43,9 +41,9 @@ object Tests {
   }
 
   def testOPTICS: Unit = {
-
-    var eps = 0.25f
-    var minPts = 4
+    var eps = 0.027f
+    var minPts = 3
+    var maxDistance = eps + 0.01f
 
     var datasetPoints:Array[OPTICSPoint] = null;
 
@@ -59,55 +57,46 @@ object Tests {
 
     println("Populating array of Points.")
     for(iterator <- 0 until datasetPoints.length) {
-
       datasetPoints(iterator) = new OPTICSPoint(iterator, -1f, -1f, normalizedWines(iterator), false, -1)
     }
 
+    println("Call OPTICS")
     var clusters = OPTICS(datasetPoints, eps, minPts)
 
-    println("Clusters found.")
-
     println("Extracting clusters.")
-    OPTICS.extractDBSCAN(clusters, 0.15f, 4)
-
     var writer2 = new PrintWriter(new File("reachDistanceResult.txt"))
 
-        for(i <- 0 until clusters.length) {
+    for(i <- 0 until clusters.length) {
+      if(clusters(i).reachDistance == -1f) {
+        clusters(i).reachDistance = maxDistance
+      } else if (clusters(i).coreDistance == -1f) {
+        clusters(i).coreDistance = maxDistance
+      }
 
-//          for(iterator <- clusters(i).dataPoint) {
-//            writer.write(iterator + " ")
-//          }
-          writer2.write(clusters(i).pointIndex + " " + clusters(i).reachDistance + "\n")
-
-        }
+      if(clusters(i).reachDistance == -1f) {
+        writer2.write(i + " " + maxDistance + "\n")
+      } else {
+        writer2.write(i + " " + clusters(i).reachDistance + "\n")
+      }
+    }
 
     writer2.close()
 
-//    for(i <- 0 until clusters.length) {
-//       println("pointIndex: " + clusters(i).pointIndex + " reachDistance: " + clusters(i).reachDistance + " coreDistance: " + clusters(i).coreDistance + " clusterID: " + clusters(i).clusterID)
-//       }
+    OPTICS.extractDBSCAN(clusters, 0.02607f, 3)
 
     var writer = new PrintWriter(new File("resultOptics.txt"))
 
-    for(i <- 0 until clusters.length) {
-
-      for(iterator <- clusters(i).dataPoint) {
-        writer.write(iterator + " ")
-      }
-      writer.write(clusters(i).clusterID + "\n")
-
+    for(point <- clusters) {
+      writer.write(point.dataPoint(0) + " " + point.dataPoint(1) + " " + point.clusterID + "\n")
     }
 
     writer.close()
-
   }
 
   def main(args: Array[String]) {
-
-//    testKMeans
-//    testDBSCAN
+    testKMeans
+    testDBSCAN
     testOPTICS
-
   }
 
 }

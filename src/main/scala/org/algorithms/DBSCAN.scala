@@ -23,8 +23,10 @@ object DBSCAN {
       if(pointState(it) == PointState.Unvisited) {
         pointState(it) = PointState.Visited
         var neighborPts = regionQuery(dataset, pointIndex, eps)
+
         if(neighborPts.size < minPts) {
           pointState(it) = PointState.Noise
+
         } else {
           expandCluster(dataset, pointIndex, neighborPts, eps, minPts)
         }
@@ -46,9 +48,11 @@ object DBSCAN {
     var i = 0
     while(i < neighborPtsCpy.length) {
       var tempLen = neighborPtsCpy.length
+
       if(pointState(neighborPtsCpy(i)) == PointState.Unvisited) {
         pointState(neighborPtsCpy(i)) = PointState.Visited
         var neighborPts_ = regionQuery(dataset, neighborPtsCpy(i), eps)
+
         if(neighborPts_.size >= minPts) {
           neighborPtsCpy = neighborPtsCpy ++ neighborPts_.diff(neighborPtsCpy.toSet).toList
         }
