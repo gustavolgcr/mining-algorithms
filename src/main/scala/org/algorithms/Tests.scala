@@ -91,6 +91,10 @@ object Tests {
   }
 
 
+  val usage = """
+    Usage: [-algoritmo kmeans|dbscan|optics -dataset dataset -minPts minPts -eps eps]
+              """
+  //-algoritmo dbscan -dataset datasets/winequality-red.csv -eps 0.001f -minPts 3
 
   def main(args: Array[String]) {
 
@@ -106,9 +110,9 @@ object Tests {
         case "-dataset" :: value :: tail =>
           nextOption(map ++ Map('dataset -> value), tail)
         case "-minPts" :: value :: tail =>
-          nextOption(map ++ Map('minPts -> value), tail)
+          nextOption(map ++ Map('minPts -> value.toInt), tail)
         case "-eps" :: value :: tail =>
-          nextOption(map ++ Map('eps -> value), tail)
+          nextOption(map ++ Map('eps -> value.toFloat), tail)
         case string :: opt2 :: tail if isSwitch(opt2) =>
           nextOption(map ++ Map('infile -> string), list.tail)
         case string :: Nil =>  nextOption(map ++ Map('infile -> string), list.tail)
@@ -118,22 +122,21 @@ object Tests {
     }
     val options = nextOption(Map(),arglist)
 
-    var minPts = options('minPts).toInt
-    var eps = options('eps).toFloat
+    var minPts = options('minPts).asInstanceOf[Int]
+    var eps = options('eps).asInstanceOf[Float]
     var dataset = options('dataset).toString
 
 
     options('algoritmo) match {
 
-      case "dbscan"  => println("dbscan")
-        testDBSCAN(eps, minPts, dataset)
-      case "optics"  => println("optics")
-        testOPTICS(eps, minPts, dataset)
-      case "kmeans"  => println("kmeans")
-        testKMeans(eps, minPts, dataset)
+      case "dbscan"  =>
+          testDBSCAN(eps, minPts, dataset)
+      case "optics"  =>
+          testOPTICS(eps, minPts, dataset)
+      case "kmeans"  =>
+         testKMeans(eps, minPts, dataset)
       case _  => "Invalid month"
     }
-
 
 
   }
