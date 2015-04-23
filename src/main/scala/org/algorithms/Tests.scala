@@ -11,7 +11,7 @@ object Tests {
 
     val wines = CSVParser.readFile(dataset)
 
-    val normalizedWines = Normalization.featureScaling(wines, 0, 1)
+    val normalizedWines = Normalization.featureScaling(wines)
 
     val kmeans : HashMap[Int, Int] = KMeans(normalizedWines, minPts, eps)
 
@@ -20,7 +20,7 @@ object Tests {
 
   def testDBSCAN(eps: Float, minPts: Int, dataset: String): Unit = {
 
-    var wines = CSVParser.readFile(dataset, ',', 0, 1)
+    var wines = CSVParser.readFile(dataset)
 
     var normalizedWines = Normalization.featureScaling(wines)
 
@@ -44,7 +44,7 @@ object Tests {
 
     var datasetPoints:Array[OPTICSPoint] = null;
 
-    var wines = CSVParser.readFile(dataset, ',', 0, 1)
+    var wines = CSVParser.readFile(dataset)
     println("Dataset read.")
 
     var normalizedWines = Normalization.featureScaling(wines)
@@ -116,8 +116,7 @@ object Tests {
         case string :: opt2 :: tail if isSwitch(opt2) =>
           nextOption(map ++ Map('infile -> string), list.tail)
         case string :: Nil =>  nextOption(map ++ Map('infile -> string), list.tail)
-        case option :: tail => println("Unknown option "+option)
-          exit(1)
+
       }
     }
     val options = nextOption(Map(),arglist)
@@ -135,7 +134,7 @@ object Tests {
           testOPTICS(eps, minPts, dataset)
       case "kmeans"  =>
          testKMeans(eps, minPts, dataset)
-      case _  => "Invalid month"
+      case _  => "Invalid algorithm"
     }
 
 
