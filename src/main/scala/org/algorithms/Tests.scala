@@ -7,44 +7,34 @@ import scala.collection.mutable.{PriorityQueue, HashMap}
 
 object Tests {
 
-  def testKMeans(eps: Float, minPts: Int, dataset: String): Unit = {
+  def testKMeans(eps: Float, minPts: Int, datasetName: String): Unit = {
 
-    val wines = CSVParser.readFile(dataset)
+    var dataset = CSVParser.readFile(datasetName)
 
-    val normalizedWines = Normalization.featureScaling(wines)
+    var normalizedDataset = Normalization.featureScaling(dataset)
 
-    val kmeans : HashMap[Int, Int] = KMeans(normalizedWines, minPts, eps)
+    var clusters = KMeans(normalizedDataset, minPts, eps)
 
-    CSVParser.saveResult("result.csv", dataset, kmeans)
+    CSVParser.saveResult("result_kmeans.csv", datasetName, clusters)
   }
 
-  def testDBSCAN(eps: Float, minPts: Int, dataset: String): Unit = {
+  def testDBSCAN(eps: Float, minPts: Int, datasetName: String): Unit = {
 
-    var wines = CSVParser.readFile(dataset)
+    var dataset = CSVParser.readFile(datasetName)
 
-    var normalizedWines = Normalization.featureScaling(wines)
+    var normalizedDataset = Normalization.featureScaling(dataset)
 
-    var clusters = DBSCAN(normalizedWines, eps, minPts)
+    var clusters = DBSCAN(normalizedDataset, eps, minPts)
 
-    println("File created with success")
-    println("Number of clusters: " + clusters.length.toString)
-
-    // Print all clusters
-    for(i <- 0 until clusters.length) {
-      println("Cluster " + i + " - Length = " + clusters(i).length.toString)
-      for (tupleindex <- clusters(i)) {
-        print(tupleindex + " ")
-      }
-      println("\n")
-    }
+    CSVParser.saveResult("result_dbscan.csv", datasetName, clusters)
   }
 
-  def testOPTICS(eps: Float, minPts: Int, dataset: String): Unit = {
+  def testOPTICS(eps: Float, minPts: Int, datasetName: String): Unit = {
     var maxDistance = eps + 0.01f
 
     var datasetPoints:Array[OPTICSPoint] = null;
 
-    var wines = CSVParser.readFile(dataset)
+    var wines = CSVParser.readFile(datasetName)
     println("Dataset read.")
 
     var normalizedWines = Normalization.featureScaling(wines)

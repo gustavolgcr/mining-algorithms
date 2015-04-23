@@ -1,11 +1,12 @@
 package main.scala.org.algorithms
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.collection.mutable.{ArrayBuffer, ListBuffer, HashMap}
 
 object DBSCAN {
   var pointState:Array[PointState.PointState] = null;
   var pointInACluster:Array[Boolean] = null;
-  var clusters: ListBuffer[ArrayBuffer[Int]] = null;
+  var resultClusters: HashMap[Int, Int] = new HashMap[Int, Int]();
+  var clusterId: Int = -1;
 
   object PointState extends Enumeration {
     type PointState = Value
@@ -13,8 +14,7 @@ object DBSCAN {
   }
 
   def apply(dataset: List[Array[Float]], eps: Float, minPts: Int):
-    ListBuffer[ArrayBuffer[Int]] = {
-    clusters = new ListBuffer[ArrayBuffer[Int]]()
+  HashMap[Int, Int] = {
     pointState = Array.fill(dataset.length)(PointState.Unvisited)
     pointInACluster = Array.fill(dataset.length)(false)
 
@@ -33,16 +33,15 @@ object DBSCAN {
       }
     }
 
-    return clusters
+    return resultClusters
   }
 
   def expandCluster(dataset: List[Array[Float]], pointIndex: Int, neighborPts:
     Set[Int], eps: Float, minPts: Int) = {
     var neighborPtsCpy = neighborPts.toList
-    var cluster = new ArrayBuffer[Int]()
 
-    cluster += pointIndex
-    clusters += cluster
+    clusterId = clusterId + 1
+    resultClusters += (pointIndex -> clusterId)
     pointInACluster(pointIndex) = true
 
     var i = 0
@@ -59,7 +58,7 @@ object DBSCAN {
       }
 
       if(!pointInACluster(neighborPtsCpy(i))) {
-        cluster += neighborPtsCpy(i)
+        for(point <- neighborPtsCpy) resultClusters += (point -> clusterId)
         pointInACluster(neighborPtsCpy(i)) = true
       }
 
