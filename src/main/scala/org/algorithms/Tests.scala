@@ -34,10 +34,12 @@ object Tests {
 
     var datasetPoints:Array[OPTICSPoint] = null;
 
-    var wines = CSVParser.readFile(datasetName)
+    var wines = CSVParser.readFile(datasetName, ';', 1, 4)
     println("Dataset read.")
 
-    var normalizedWines = Normalization.featureScaling(wines)
+    var normalizedWines = Normalization.stringDatasetToFloat(wines)
+
+    //var normalizedWines = Normalization.featureScaling(wines)
     println("Dataset normalized.")
 
     datasetPoints = new Array[OPTICSPoint](normalizedWines.length)
@@ -69,7 +71,7 @@ object Tests {
 
     writer2.close()
 
-    OPTICS.extractDBSCAN(clusters, 0.02607f, 3)
+    OPTICS.extractDBSCAN(clusters, 0.11f, 3)
 
     var writer = new PrintWriter(new File("resultOptics.txt"))
 
@@ -78,6 +80,9 @@ object Tests {
     }
 
     writer.close()
+
+    var resultCluster = OPTICS.extractResultClusters(clusters)
+    CSVParser.saveResult("result_optics.csv", datasetName, resultCluster)
   }
 
 

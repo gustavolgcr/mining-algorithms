@@ -47,4 +47,19 @@ object Normalization {
 
     return resultList.toList
   }
+
+  def stringDatasetToFloat(sourceList: List[Array[String]]) : List[Array[Float]] = {
+    var resultList = ListBuffer[Array[Float]]()
+
+    for(tuple <- sourceList) {
+      var it = 0
+      var newTuple = Array.fill(tuple.length)(0f)
+      for(it <- 0 until tuple.length) {
+        newTuple(it) = tuple(it).toFloat
+      }
+      resultList += newTuple
+    }
+
+    return resultList.toList
+  }
 }

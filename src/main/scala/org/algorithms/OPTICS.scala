@@ -152,5 +152,13 @@ object OPTICS {
       }
     }
   }
+
+  def extractResultClusters(pQueue: ListBuffer[OPTICSPoint]): HashMap[Int, Int] = {
+      var resultClusters = new HashMap[Int, Int]
+
+      for(point <- pQueue) resultClusters += (point.pointIndex -> point.clusterID)
+
+      return resultClusters
+  }
 }
 
